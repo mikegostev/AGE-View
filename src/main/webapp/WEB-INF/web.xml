@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  
+  <display-name>Biosamples Database</display-name>
+  
+  <context-param>
+   <param-name>isMaster</param-name>
+   <param-value>true</param-value>
+  </context-param>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+
+  <servlet>
+    <description></description>
+    <display-name>BioSDService</display-name>
+    <servlet-name>BioSDService</servlet-name>
+    <servlet-class>uk.ac.ebi.biosd.server.service.BioSDServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>AgeAdminProxy</display-name>
+    <servlet-name>AgeAdminProxy</servlet-name>
+    <servlet-class>uk.ac.ebi.age.admin.server.service.AgeAdminProxy</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>RemoteSvc</display-name>
+    <servlet-name>RemoteSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.RemoteSvc</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>LoginSvc</display-name>
+    <servlet-name>LoginSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.LoginSvc</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>DBStat</display-name>
+    <servlet-name>DBStat</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.service.DBStat</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>XML data export</display-name>
+    <servlet-name>XMLDataExport</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.xmlexport.BiosamplesXMLExport</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>DownloadSvc</display-name>
+    <servlet-name>DownloadSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.DownloadSvc</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>DataSourceSvc</display-name>
+    <servlet-name>DataSourceSvc</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.DataSourceServlet</servlet-class>
+  </servlet>
+
+  
+  <servlet>
+    <description>
+  	</description>
+    <display-name>SampleViewRedirector</display-name>
+    <servlet-name>SampleViewRedirector</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.service.SampleViewRedirector</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <description>
+  	</description>
+    <display-name>GroupViewRedirector</display-name>
+    <servlet-name>GroupViewRedirector</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.biosd.server.service.GroupViewRedirector</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>BioSDService</servlet-name>
+    <url-pattern>/biosd/ageQueryGWT</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AgeAdminProxy</servlet-name>
+    <url-pattern>/admin/ageAdminGWT</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RemoteSvc</servlet-name>
+    <url-pattern>/upload</url-pattern>
+    <url-pattern>/remote</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>LoginSvc</servlet-name>
+    <url-pattern>/Login</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>XMLDataExport</servlet-name>
+    <url-pattern>/XMLDataExport</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DBStat</servlet-name>
+    <url-pattern>/DBStat</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DownloadSvc</servlet-name>
+    <url-pattern>/download</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>DataSourceSvc</servlet-name>
+    <url-pattern>/dataSourceService</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SampleViewRedirector</servlet-name>
+    <url-pattern>/sample/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>GroupViewRedirector</servlet-name>
+    <url-pattern>/group/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>OnlineStatus</display-name>
+    <servlet-name>OnlineStatus</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.StatusServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OnlineStatus</servlet-name>
+    <url-pattern>/status</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <description>
+  	</description>
+    <display-name>InstanceId</display-name>
+    <servlet-name>InstanceId</servlet-name>
+    <servlet-class>
+  	uk.ac.ebi.age.admin.server.service.InstanceIdServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InstanceId</servlet-name>
+    <url-pattern>/instanceId</url-pattern>
+  </servlet-mapping>
+
+  <listener>
+    <listener-class>uk.ac.ebi.biosd.server.service.Init</listener-class>
+  </listener>
+  
+</web-app>

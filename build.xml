@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BioSD" default="dist" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<description>BioSample Database</description>
+	<!-- set global properties for this build -->
+
+	<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+
+	<property name="src" location="src/main/java"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="dist"/>
+
+	<property name="AGE" location="../AGE"/>
+	<property name="AGEAdmin" location="../AGE-admin"/>
+	<property name="AGEVisual" location="../AGE-Visual"/>
+	<property name="Commons" location="../Commons"/>
+
+
+	<path id="build.lib">
+		<fileset dir="${gwt.home}" includes="*.jar"/>
+		<fileset dir="buildlib/" includes="*.jar"/>
+		<fileset dir="${AGEVisual}/buildlib/"/>
+	</path>
+
+	<path id="age.lib">
+		<fileset dir="${AGE}/lib/" includes="*.jar"/>
+	</path>
+
+	<path id="biosd.lib">
+		<fileset dir="war/WEB-INF/lib/" includes="*.jar"/>
+	</path>
+
+	<path id="dist.lib">
+		<fileset dir="${build}/WEB-INF/lib/" includes="*.jar"/>
+	</path>
+
+	<target name="dist" description="generate the distribution" depends="syncRes" >
+
+		<tstamp>
+			<format property="BUILDTIME" pattern="yyyy-MM-dd HH:mm z Z" locale="en,UK"/>
+		</tstamp>
+
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}"/>
+
+		<mkdir dir="${build}/WEB-INF/classes"/>
+
+		<copy todir="${build}" verbose="false">
+			<fileset dir="src/main/webapp">
+				<exclude name="**/.gitignore"/>
+			</fileset>
+			<fileset dir="${AGEAdmin}/src/main/webapp">
+				<exclude name="**/.gitignore" />
+				<exclude name="WEB-INF/" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build}/WEB-INF/lib/">
+			<fileset dir="${AGE}/lib/" />
+			<fileset dir="${AGEAdmin}/lib/" />
+			<fileset dir="war/WEB-INF/lib/"/>
+			<fileset dir="lib/"/>
+		</copy>
+
+		<copy todir="${build}/WEB-INF/classes/">
+			<fileset dir="src/main/resources/" />
+		</copy>
+
+		<javac srcdir="${Commons}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+			<compilerarg value="-Xlint:deprecation"/>
+		</javac>
+
+		<javac srcdir="${AGE}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+			<compilerarg value="-Xlint:deprecation"/>
+		</javac>
+
+		<javac srcdir="${AGEVisual}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+			<compilerarg value="-Xlint:deprecation"/>
+		</javac>
+
+		<javac srcdir="${AGEAdmin}/src/main/java" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+			<compilerarg value="-Xlint:deprecation"/>
+			<compilerarg value="-Xlint:unchecked"/>
+		</javac>
+
+		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" classpath="${toString:dist.lib}:${toString:build.lib}" source="1.6" target="1.6" debug="on" nowarn="on" includeAntRuntime="false">
+			<compilerarg value="-Xlint:deprecation"/>
+		</javac>
+
+		<echo>Staring GWT compiler</echo>
+
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath>
+				<pathelement location="${src}" />
+				<pathelement location="${AGE}/src/main/resources" />
+				<pathelement location="${AGE}/src/main/java" />
+				<pathelement location="${AGEAdmin}/src/main/resources" />
+				<pathelement location="${AGEAdmin}/src/main/java" />
+				<pathelement location="${AGEVisual}/src/main/resources" />
+				<pathelement location="${AGEVisual}/src/main/java" />
+				<path refid="build.lib" />
+			</classpath>
+			<jvmarg value="-Xmx512M" />
+			<arg value="-war" />
+			<arg value="${build}" />
+			<arg value="uk.ac.ebi.biosd.BioSD" />
+			<arg value="uk.ac.ebi.age.admin.AgeAdmin" />
+		</java>
+
+		<filter token="BUILDTIME" value="${BUILDTIME}"/>
+
+		<copy file="war/RELEASE.html" todir="${build}" filtering="true" overwrite="true"/>
+
+
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="${dist}/BioSD${DSTAMP}.war" basedir="${build}"/>
+
+	</target>
+
+
+	<target name="syncRes">
+
+		<sync todir="war" verbose="true">
+			<fileset dir="${AGEVisual}/src/main/webapp">
+				<exclude name="META-INF/"/>
+				<exclude name="WEB-INF/"/>
+			</fileset>
+			<fileset dir="${AGEAdmin}/war">
+				<exclude name="META-INF/"/>
+				<exclude name="WEB-INF/"/>
+				<exclude name="admin/"/>
+			</fileset>
+			<fileset dir="src/main/webapp"/>
+			<preserveintarget>
+				<include name="WEB-INF/classes/"/>
+				<include name="WEB-INF/lib/"/>
+				<include name="WEB-INF/deploy/"/>
+				<include name="admin/"/>
+		        <include name="biosd/"/>
+			</preserveintarget>
+		</sync>
+
+	</target>
+	
+	 <target name="deps" description="download dependences jars" >
+
+ 		<artifact:remoteRepository id="smartgwt" url="http://www.smartclient.com/maven2" />
+
+	 	<artifact:dependencies filesetId="dependency.fileset">
+
+			<dependency
+				groupId="org.apache.lucene"
+				artifactId="lucene-highlighter"
+				version="[3.0.1,4.0.0-ALPHA)"
+			/>
+
+	 	
+	 	</artifact:dependencies>
+
+	 	
+	 	<artifact:dependencies filesetId="build.fileset">
+	 		<remoteRepository refid="smartgwt" />
+
+
+	 		
+		 	<dependency
+				groupId="com.smartgwt"
+				artifactId="smartgwt"
+				version="[3.0,)"
+			/>	 	 	
+	 		
+	 		<dependency
+	 			groupId="javax.servlet"
+	 			artifactId="servlet-api"
+	 			version="2.5" scope="provided"
+	 		/>
+		</artifact:dependencies>
+
+	 	
+	 	<copy todir="buildlib">
+	 	  <fileset refid="build.fileset" />
+	 	  <!-- This mapper strips off all leading directory information -->
+	 	  <mapper type="flatten" />
+	 	</copy>
+
+	 	<copy todir="lib">
+	 	  <fileset refid="dependency.fileset" />
+	 	  <!-- This mapper strips off all leading directory information -->
+	 	  <mapper type="flatten" />
+	 	</copy>
+
+
+	 </target>
+
+</project>
